@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>ARAM Pre Game Strategizing Practice</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+	<style>
+		body {
+			background-color: black;
+			color: white;
+		}
+		.popover-header {
+			color: black;
+		}
+		.modal-dialog {
+			color: black;
+		}
+		.champion-loading-img {
+			max-width: 15vw;
+			max-height: 33vh;
+			cursor: pointer;
+			filter: brightness(80%);
+		}
+		.champion-loading-img:hover {
+			filter: brightness(100%);
+		}
+		.tips {
+			font-size: 80%;
+			text-align: left;
+		}
+		.abilities .col {
+			padding: 0;
+		}
+		.abilities img {
+			max-width: 3vw;
+			max-height: 4vh;
+			cursor: pointer;
+			filter: brightness(80%);
+		}
+		.abilities img:hover {
+			filter: brightness(100%);
+		}
+
+	</style>
+</head>
+
+<body>
+	<noscript>
+		<h1>This site requires JavaScript to function.</h1>
+	</noscript>
+	<div class="container text-center">
+		<div class="row"><h1>Enemy Team</h1></div>
+		<div class="row" id="red-team">
+		</div>
+		<div class="row"><h1>Your Team</h1></div>
+		<div class="row" id="blue-team">
+		</div>
+		<div class="row">
+			<div class="col">
+				<button id="btn-wut" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#what-is-this-modal">What is this?</button>
+			</div>
+			<div class="col">
+				<button id="btn-new" type="button" class="btn btn-primary">Randomize Teams</button>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="what-is-this-modal" tabindex="-1" aria-labelledby="what-is-this-modal-label" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="what-is-this-modal-label">What is this?</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					One way to get better at ARAM is to practice thinking through each
+					team's win condition during the loading screen. This app lets you
+					practice this.
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cool!</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="change-champion-modal" tabindex="-1" aria-labelledby="change-champion-modal-modal-label" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="what-is-this-modal-label">Select New Champion</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<select id="change-champion-select">
+					</select>
+				</div>
+				<div class="modal-footer">
+					<button type="button" id="change-champion-modal-button" class="btn btn-primary">Select</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/handlebars" id="template-champ-card">
+		<div class="col">
+			<div>
+				<img
+					class="champion-loading-img"
+					data-id={{id}}
+					src="dragontail-12.23.1/img/champion/loading/{{loadingScreenImage}}"
+				>
+			</div>
+			<div class="row abilities">
+				<div class="col">
+					<img
+						src="dragontail-12.23.1/12.23.1/img/passive/{{passiveFilename}}"
+						data-bs-toggle="popover"
+						data-bs-title="{{passiveTitle}}"
+						data-bs-content="{{passiveBody}}"
+					>
+				</div>
+				<div class="col">
+					<img
+						src="dragontail-12.23.1/12.23.1/img/spell/{{spellQFilename}}"
+						data-bs-toggle="popover"
+						data-bs-title="{{spellQTitle}}"
+						data-bs-content="{{spellQBody}}"
+					>
+				</div>
+				<div class="col">
+					<img
+						src="dragontail-12.23.1/12.23.1/img/spell/{{spellWFilename}}"
+						data-bs-toggle="popover"
+						data-bs-title="{{spellWTitle}}"
+						data-bs-content="{{spellWBody}}"
+					>
+				</div>
+				<div class="col">
+					<img
+						src="dragontail-12.23.1/12.23.1/img/spell/{{spellEFilename}}"
+						data-bs-toggle="popover"
+						data-bs-title="{{spellETitle}}"
+						data-bs-content="{{spellEBody}}"
+					>
+				</div>
+				<div class="col">
+					<img
+						src="dragontail-12.23.1/12.23.1/img/spell/{{spellRFilename}}"
+						data-bs-toggle="popover"
+						data-bs-title="{{spellRTitle}}"
+						data-bs-content="{{spellRBody}}"
+					>
+				</div>
+			</div>
+			<div>
+				{{name}}
+				{{#each tags}}
+					<span class="badge rounded-pill text-bg-light">
+					{{this}}
+					</span>
+				{{/each}}
+			</div>
+			{{#if tips}}
+				<div class="tips">
+					<a data-bs-toggle="collapse" href="#collapse-{{id}}" role="button" aria-expanded="false" aria-controls="collapse-{{id}}">Tips</a>
+					<div class="collapse" id="collapse-{{id}}">
+						<ul>
+							{{#each tips}}
+								<li>{{this}}</li>
+							{{/each}}
+						</ul>
+					</div>
+				</div>
+			{{/if}}
+		</div>
+	</script>
+	<script src="https://cdn.jsdelivr.net/npm/handlebars@4.7.7/dist/handlebars.min.js" integrity="sha256-ZSnrWNaPzGe8v25yP0S6YaMaDLMTDHC+4mHTw0xydEk=" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+	<script type="text/javascript">
+		(async function() {
+			'use strict';
+
+			function shuffle(array) {
+				let currentIndex = array.length, randomIndex;
+				// While there remain elements to shuffle.
+				while (currentIndex != 0) {
+					// Pick a remaining element.
+					randomIndex = Math.floor(Math.random() * currentIndex);
+					currentIndex--;
+					// And swap it with the current element.
+					[array[currentIndex], array[randomIndex]] = [
+					 array[randomIndex], array[currentIndex]];
+				}
+				return array;
+			}
+			function champIdToLoadingImageName(champName, selectedSkinNum) {
+				switch (champName) {
+					case 'Fiddlesticks': return `FiddleSticks_${selectedSkinNum}.jpg`;
+					default: return `${champName}_${selectedSkinNum}.jpg`;
+				}
+			}
+			const res = await fetch('dragontail-12.23.1/12.23.1/data/en_US/championFull.json');
+			const json = await res.json();
+			const allChamps = Object.values(json.keys);
+			const $changeChampionSelect = document.getElementById('change-champion-select');
+			allChamps.sort().forEach(champId => {
+				$changeChampionSelect.insertAdjacentHTML('beforeend', `<option value="${champId}">${json.data[champId].name}</option>`);
+			});
+			const champSelectModal = new bootstrap.Modal('#change-champion-modal', {});
+			const $changeChampionModalButton = document.getElementById('change-champion-modal-button');
+			$changeChampionModalButton.onclick = function() {
+				champSelectModal.hide();
+				if ($changeChampionModalButton.dataset.selectParams) {
+					const selectParams = JSON.parse($changeChampionModalButton.dataset.selectParams);
+					let newSelectedChamps = selectParams.selectedChamps;
+					const replaceIndex = newSelectedChamps.indexOf(selectParams.replaceChamp);
+					if (replaceIndex === -1) {
+						console.log("Could not find", selectParams.replaceChamp, "in", newSelectedChamps);
+						return;
+					}
+					const existingIndex = newSelectedChamps.indexOf($changeChampionSelect.value);
+					newSelectedChamps[replaceIndex] = $changeChampionSelect.value;
+					if (existingIndex !== -1) {
+						newSelectedChamps[existingIndex] = selectParams.replaceChamp;
+					}
+					$changeChampionModalButton.dataset.selectParams = null;
+					showChamps(newSelectedChamps);
+				}
+			};
+			function showChamps(selectedChamps) {
+				const blueChamps = selectedChamps.slice(0, 5);
+				const redChamps = selectedChamps.slice(5, 10);
+				const templateChampCard = Handlebars.compile(document.getElementById('template-champ-card').innerText);
+				const $blue = document.getElementById('blue-team');
+				const $red = document.getElementById('red-team');
+				[[blueChamps, $blue, true], [redChamps, $red, false]].forEach(data => {
+					const [champs, $teamElem, yourTeam] = data;
+					while ($teamElem.firstChild) {
+						$teamElem.removeChild($teamElem.firstChild);
+					}
+					for (let i = 0; i < champs.length; i++) {
+						const champData = json.data[champs[i]];
+						console.log(champData);
+						const selectedSkinNum = shuffle(champData.skins)[0].num;
+						$teamElem.insertAdjacentHTML('beforeend', templateChampCard({
+							id: champData.id,
+							name: champData.name,
+							tags: champData.tags,
+							loadingScreenImage: champIdToLoadingImageName(champData.id, selectedSkinNum),
+							tips: yourTeam ? champData.allytips : champData.enemytips,
+							passiveFilename: champData.passive.image.full,
+							passiveTitle: champData.passive.name,
+							passiveBody: champData.passive.description,
+							spellQFilename: champData.spells[0].image.full,
+							spellQTitle: champData.spells[0].name,
+							spellQBody: champData.spells[0].description,
+							spellWFilename: champData.spells[1].image.full,
+							spellWTitle: champData.spells[1].name,
+							spellWBody: champData.spells[1].description,
+							spellEFilename: champData.spells[2].image.full,
+							spellETitle: champData.spells[2].name,
+							spellEBody: champData.spells[2].description,
+							spellRFilename: champData.spells[3].image.full,
+							spellRTitle: champData.spells[3].name,
+							spellRBody: champData.spells[3].description,
+						}));
+					}
+					const popoverTriggerList = $teamElem.querySelectorAll('[data-bs-toggle="popover"]');
+					[...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
+					//[...popoverTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+					const champSelectTriggerList = $teamElem.querySelectorAll('.champion-loading-img');
+					[...champSelectTriggerList].forEach(el => {
+						el.onclick = function() {
+							$changeChampionModalButton.dataset.selectParams = JSON.stringify({
+								selectedChamps: selectedChamps,
+								replaceChamp: el.dataset.id
+							});
+							champSelectModal.show();
+						};
+					});
+				});
+			}
+			function selectAndShowRandomChamps() {
+				const selectedChamps = shuffle(allChamps).slice(0, 10);
+				showChamps(selectedChamps);
+			}
+			selectAndShowRandomChamps();
+			document.getElementById('btn-new').onclick = selectAndShowRandomChamps;
+		})();
+	</script>
+</body>
+</html>
